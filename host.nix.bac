@@ -1,0 +1,151 @@
+{ pkgs, config, ... }:
+
+let 
+  unstable = import <nixos-unstable> { config = { allowUnfree = true; }; }; 
+  agenix = import <agenix> { config = { allowUnfree = true; }; }; 
+in {
+  environment.systemPackages = with pkgs; [
+        docker
+	neovim
+	nvd
+	ripgrep
+        screen
+	tailscale
+	tealdeer
+        unstable.veilid
+        (pkgs.callPackage <agenix/pkgs/agenix.nix> {})
+	];
+  age.secrets.secret1 = {
+    file = ./secrets/secret1.age;
+    mode = "770";
+    owner = "nextcloud";
+    group = "nextcloud";
+  };
+
+  age.secrets.secret2 = {
+    file = ./secrets/secret2.age;
+    mode = "770";
+    owner = "rhousand";
+    group = "wheel";
+  };
+  # System Services
+  services.tailscale.enable = true;
+  
+  services.openssh.settings.LogLevel = "VERBOSE";
+  
+  services.fail2ban.enable = true;
+  
+  services.fail2ban.bantime-increment.multipliers = "1 2 4 6 8 16 32 64";
+
+  services.postfix.enable = true;
+  
+  services.nextcloud = {
+    enable = true;
+    hostName = "next.gladstone-life.com";
+    https = true;
+    phpOptions."opcache.interned_strings_buffer" = "23";
+    config.adminpassFile = config.age.secrets.secret1.path;
+    #config.adminpassFile = "${pkgs.writeText "adminpass" "This is where the password would be"}";
+    config.defaultPhoneRegion = "US";
+    package = unstable.nextcloud28;
+    extraApps = with config.services.nextcloud.package.packages.apps; {
+      inherit news contacts calendar tasks notes;
+      unsplash =  pkgs.fetchNextcloudApp rec {
+        url = "https://github.com/nextcloud/unsplash/releases/download/v2.2.1/unsplash.tar.gz";
+        sha256 = "/fOkTIRAwMgtgqAykWI+ahB1uo6FlvUaDNKztCyBQfk=";
+        license = "free";
+      };
+    # talk = pkgs.fetchNextcloudApp rec {
+    #   url = "https://github.com/nextcloud/spreed/archive/refs/tags/v17.1.1.tar.gz";
+    #   sha256 = "sha256-q2+Hzvh4StwUERLcB+n4Eo7yeimll5wx+D4FUkK7UEg=";
+    # };
+    };
+    extraAppsEnable = true;
+    extraOptions = {
+      mail_smtpmode = "sendmail";
+      mail_sendmailmode = "pipe";
+    };
+  };
+
+  services.nginx.virtualHosts.${config.services.nextcloud.hostName} = {
+    forceSSL = true;
+    enableACME = true;
+  };
+  
+  services.sslh = {
+    enable = false;
+    verbose = true;
+  };
+  
+  # System Program configurations
+  programs.bandwhich.enable = true;
+  
+  programs.neovim = {
+    enable = true;
+    vimAlias = true;
+    viAlias = true;
+    configure = {
+      customRC = ''
+        set number relativenumber
+        set cc=120
+        set list
+        set listchars=tab:→\ ,space:·,nbsp:␣,trail:•,eol:¶,precedes:«,extends:»
+        if &diff
+          colorscheme blue
+        endif
+      '';
+      packages.myVimPackage = with pkgs.vimPlugins; {
+        start = [ vim-nix ];
+      };
+    };
+  };
+
+  environment.variables.EDITOR = "nvim";
+
+  # create a oneshot job to authenticate to Tailscale
+  systemd.services.tailscale-autoconnect = {
+    description = "Automatic connection to Tailscale";
+
+    # make sure tailscale is running before trying to connect to tailscale
+    after = [ "network-pre.target" "tailscale.service" ];
+    wants = [ "network-pre.target" "tailscale.service" ];
+    wantedBy = [ "multi-user.target" ];
+
+    # set this service as a oneshot job
+    serviceConfig.Type = "oneshot";
+
+    # have the job run this shell script
+    script = with pkgs; ''
+      # wait for tailscaled to settle
+      sleep 2
+
+      # check if we are already authenticated to tailscale
+      status="$(${tailscale}/bin/tailscale status --json | ${jq}/bin/jq -r .BackendState)"
+      if [ $status = "Running" ]; then # if so, then do nothing
+        exit 0
+      fi
+
+      # otherwise authenticate with tailscale
+      ${tailscale}/bin/tailscale up --authkey tskey-auth-k9g3HM3CNTRL-omkwgzKt2S2e6cRE6KChL2Dbum2RKMbdg
+
+    '';
+  };
+
+  networking.firewall = {
+    # enable the firewall
+    enable = true;
+
+    # always allow traffic from your Tailscale network
+    trustedInterfaces = [ "tailscale0" ];
+
+    # allow the Tailscale UDP port through the firewall
+    allowedUDPPorts = [ config.services.tailscale.port 5150 3478 ];
+
+    # allow you to SSH in over the public internet
+    allowedTCPPorts = [ 22 5150 80 8443 3478 443 ];
+  };
+
+  # enable closed source packages such as the minecraft server
+  nixpkgs.config.allowUnfree = true;
+  system.stateVersion = "23.11";
+}

@@ -1,0 +1,4 @@
+agenix https://github.com/ryantm/agenix/archive/main.tar.gz
+home-manager https://github.com/nix-community/home-manager/archive/release-23.05.tar.gz
+nixos https://nixos.org/channels/nixos-23.05
+nixos-unstable https://nixos.org/channels/nixos-unstable
