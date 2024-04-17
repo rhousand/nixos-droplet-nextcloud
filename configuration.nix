@@ -19,6 +19,9 @@
   networking.hostName = "nixos-droplet";
   networking.domain = "";
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+
   services.openssh.enable = true;
   services.openssh.settings.PermitRootLogin = "no";
 
