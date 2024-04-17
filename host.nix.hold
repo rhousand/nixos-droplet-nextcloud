@@ -15,7 +15,6 @@ in {
         unstable.veilid
         (pkgs.callPackage <agenix/pkgs/agenix.nix> {})
 	];
-
   age.secrets.secret1 = {
     file = ./secrets/secret1.age;
     mode = "770";
@@ -34,36 +33,7 @@ in {
   
   services.openssh.settings.LogLevel = "VERBOSE";
   
-services.fail2ban = {
-   enable = true;
-   ignoreIP = [
-     "10.0.0.0/24"
-   ];
-   jails = {
-     nginx-http-auth = ''
-       enabled  = true
-       port     = http,https
-       logpath  = /var/log/nginx/*.log
-       backend  = polling
-       journalmatch =
-     '';
-     nginx-botsearch = ''
-       enabled  = true
-       port     = http,https
-       logpath  = /var/log/nginx/*.log
-       backend  = polling
-       journalmatch =
-     '';
-     nginx-bad-request = ''
-       enabled  = true
-       port     = http,https
-       logpath  = /var/log/nginx/*.log
-       backend  = polling
-       journalmatch =
-     '';
-   };
- };
-  #services.fail2ban.enable = true;
+  services.fail2ban.enable = true;
   
   services.fail2ban.bantime-increment.multipliers = "1 2 4 6 8 16 32 64";
 
@@ -121,13 +91,6 @@ services.fail2ban = {
   # System Program configurations
   programs.bandwhich.enable = true;
   
-#  programs.nh = {
-#    enable = true;
-#    clean.enable = true;
-#    clean.extraArgs = "--keep-since 4d --keep 3";
-#    flake = "/etc/nixos";
-#  };
-#
   programs.neovim = {
     enable = true;
     vimAlias = false;
