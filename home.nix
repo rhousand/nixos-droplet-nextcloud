@@ -9,6 +9,8 @@
       bottom
       ripgrep
       tealdeer
+      neofetch 
+      bat # a better cat
     ];
   stateVersion = "23.11";
   };
