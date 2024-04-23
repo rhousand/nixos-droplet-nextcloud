@@ -8,11 +8,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1713882833,
-        "narHash": "sha256-hlQUmSGbDJhqn069WkUq1CpchvqywcmlQLjNJuJ+Gkk=",
+        "lastModified": 1713903621,
+        "narHash": "sha256-FGjFY9pdWgdZhC4WwRQjUzX+HPYFYmBkkjLBJLfmj7w=",
         "ref": "refs/heads/update_crowsec_hash",
-        "rev": "c67c7c508cc84e85d6a137d184e68b43d1c2fb03",
-        "revCount": 6,
+        "rev": "2186394915320c3844e03efedf939fc79c2be352",
+        "revCount": 8,
         "type": "git",
         "url": "file:///home/rhousand/repos/nix-flake-crowdsec"
       },
@@ -26,11 +26,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1694529238,
-        "narHash": "sha256-zsNZZGTGnMOf9YpHKJqMSsa0dXbfmxeoJ7xHlrt+xmY=",
+        "lastModified": 1710146030,
+        "narHash": "sha256-SZ5L6eA7HJ/nmkzGG7/ISclqe6oZdOZTNoesiInkXPQ=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "ff7b65b44d01cf9ba6a71320833626af21126384",
+        "rev": "b1d9ab70662946ef0850d488da1c9019f3a9752a",
         "type": "github"
       },
       "original": {
@@ -45,11 +45,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1713818326,
-        "narHash": "sha256-aw3xbVPJauLk/bbrlakIYxKpeuMWzA2feGrkIpIuXd8=",
+        "lastModified": 1713894582,
+        "narHash": "sha256-pHJYZIVFmzPAwyTfcMGJwlfz18nOsS4p0CuDnI1EDL4=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "67de98ae6eed5ad6f91b1142356d71a87ba97f21",
+        "rev": "33a20182e3164f451b6a4ac2ecadcab5c2c36703",
         "type": "github"
       },
       "original": {

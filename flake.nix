@@ -39,7 +39,6 @@
                };
              };
            })
-
            crowdsec.nixosModules.crowdsec-firewall-bouncer
            ({ pkgs, lib, ... }: {
 	     nixpkgs.overlays = [crowdsec.overlays.default];
