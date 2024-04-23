@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, config, crowdsec, ... }:
 
 let 
   unstable = import <nixos-unstable> { config = { allowUnfree = true; }; }; 
@@ -32,40 +32,40 @@ in {
   # System Services
   services.tailscale.enable = true;
   
-  services.openssh.settings.LogLevel = "VERBOSE";
+  #services.openssh.settings.LogLevel = "VERBOSE";
   
-services.fail2ban = {
-   enable = true;
-   ignoreIP = [
-     "10.0.0.0/24"
-   ];
-   jails = {
-     nginx-http-auth = ''
-       enabled  = true
-       port     = http,https
-       logpath  = /var/log/nginx/*.log
-       backend  = polling
-       journalmatch =
-     '';
-     nginx-botsearch = ''
-       enabled  = true
-       port     = http,https
-       logpath  = /var/log/nginx/*.log
-       backend  = polling
-       journalmatch =
-     '';
-     nginx-bad-request = ''
-       enabled  = true
-       port     = http,https
-       logpath  = /var/log/nginx/*.log
-       backend  = polling
-       journalmatch =
-     '';
-   };
- };
-  #services.fail2ban.enable = true;
-  
-  services.fail2ban.bantime-increment.multipliers = "1 2 4 6 8 16 32 64";
+ services.fail2ban = {
+    enable = false;
+    ignoreIP = [
+      "10.0.0.0/24"
+    ];
+    jails = {
+      nginx-http-auth = ''
+        enabled  = true
+        port     = http,https
+        logpath  = /var/log/nginx/*.log
+        backend  = polling
+        journalmatch =
+      '';
+      nginx-botsearch = ''
+        enabled  = true
+        port     = http,https
+        logpath  = /var/log/nginx/*.log
+        backend  = polling
+        journalmatch =
+      '';
+      nginx-bad-request = ''
+        enabled  = true
+        port     = http,https
+        logpath  = /var/log/nginx/*.log
+        backend  = polling
+        journalmatch =
+      '';
+    };
+  };
+   #services.fail2ban.enable = true;
+   
+   services.fail2ban.bantime-increment.multipliers = "1 2 4 6 8 16 32 64";
 
   services.postfix.enable = true;
   
@@ -149,6 +149,36 @@ services.fail2ban = {
   };
 
   environment.variables.EDITOR = "nvim";
+
+  # Add Crowdsec Bouncer Service
+  systemd.services.crowdsec.serviceConfig = {
+    ExecStartPre = let
+      script = pkgs.writeScriptBin "register-bouncer" ''
+        #!${pkgs.runtimeShell}
+        set -eu
+        set -o pipefail
+
+        if ! cscli bouncers list | grep -q "my-bouncer"; then
+          cscli bouncers add "my-bouncer" --key "kajbpijbjalkepciaske3094"
+        fi
+      '';
+    in ["${script}/bin/register-bouncer"];
+  };
+  # Allow Crowdsec Monitor SSHD via Systemd
+  services.crowdsec = let
+    yaml = (pkgs.formats.yaml {}).generate;
+    acquisitions_file = yaml "acquisitions.yaml" {
+      source = "journalctl";
+      journalctl_filter = ["_SYSTEMD_UNIT=sshd.service"];
+      labels.type = "syslog";
+    };
+  in {
+    enable = true;
+    allowLocalJournalAccess = true;
+    settings = {
+      crowdsec_service.acquisition_path = acquisitions_file;
+    };
+  };
 
   # create a oneshot job to authenticate to Tailscale
   systemd.services.tailscale-autoconnect = {
