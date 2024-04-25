@@ -110,11 +110,19 @@ in {
     ${config.services.nextcloud.hostName} = {
       forceSSL = true;
       enableACME = true;
+      ##extraConfig = ''
+      ##  error_log syslog:server=unix:/dev/log;
+      ##  access_log syslog:server=unix:/dev/log combined;
+      ##'';
     };
 
     "onlyoffice.gladstone-life.com" = {
       forceSSL = true;
       enableACME = true;
+      ##extraConfig = ''
+      ##  error_log syslog:server=unix:/dev/log;
+      ##  access_log syslog:server=unix:/dev/log combined;
+      ##'';
     };
   };
   
@@ -166,12 +174,27 @@ in {
   };
   # Allow Crowdsec Monitor SSHD via Systemd
   services.crowdsec = let
-    yaml = (pkgs.formats.yaml {}).generate;
-    acquisitions_file = yaml "acquisitions.yaml" {
-      source = "journalctl";
-      journalctl_filter = ["_SYSTEMD_UNIT=sshd.service"];
-      labels.type = "syslog";
-    };
+    ##yaml = (pkgs.formats.yaml {}).generate;
+    ##acquisitions_file = yaml "acquisitions.yaml" {
+    ##  source = "journalctl";
+    ##  journalctl_filter = ["_SYSTEMD_UNIT=sshd.service" ];
+    ##  labels.type = "syslog";
+    ##  filenames = [ "/var/log/nginx/*.log"];
+    ##  labels.type = "nginx";
+    ##};
+    acquisitions_file = pkgs.writeText "acquisitions.yaml"
+      ''
+      journalctl_filter:
+       - _SYSTEMD_UNIT=sshd.service
+      labels:
+        type: syslog
+      source: journalctl   
+      ---
+      filenames:  
+        - /var/log/nginx/*.log
+      labels:
+        type: nginx
+      '';
   in {
     enable = true;
     allowLocalJournalAccess = true;

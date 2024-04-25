@@ -5,6 +5,7 @@
   inputs = {
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
+     #  url = "git+file:///home/rhousand/repos/nixpkgs";
     };
     crowdsec = {
       #url = "github:kampka/nix-flake-crowdsec";
