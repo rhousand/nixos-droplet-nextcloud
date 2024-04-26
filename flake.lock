@@ -8,10 +8,11 @@
         ]
       },
       "locked": {
-        "dirtyRev": "6c7253f51ca6ff01490ef8e8d971e99d121f5085-dirty",
-        "dirtyShortRev": "6c7253f-dirty",
-        "lastModified": 1710962993,
-        "narHash": "sha256-6gV/pxz8j6n0VVluiv79iMVasZ1HHPQzUy7ZTa7F+Uc=",
+        "lastModified": 1714149089,
+        "narHash": "sha256-N+L6wSXJ3dhsmYoHjZuhx9ZBEAt/Sct3lSsJjqM54Us=",
+        "ref": "refs/heads/nixunstable",
+        "rev": "d54b443b861247bd68672a9fff780706dd4b24b9",
+        "revCount": 7,
         "type": "git",
         "url": "file:///home/rhousand/repos/nix-flake-crowdsec"
       },
