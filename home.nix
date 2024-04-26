@@ -6,11 +6,12 @@
     homeDirectory = "/home/rhousand";
     file.".rhtest".source = /run/agenix/secret2;
     packages = with pkgs; [
+      bat # a better cat
       bottom
+      neofetch 
       ripgrep
       tealdeer
-      neofetch 
-      bat # a better cat
+      zoxide # a better cd
     ];
   stateVersion = "23.11";
   };
