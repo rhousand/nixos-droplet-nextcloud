@@ -22,8 +22,11 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
 
-  services.openssh.enable = true;
-  services.openssh.settings.PermitRootLogin = "no";
+  services.openssh = {
+    enable = true;
+    settings.PermitRootLogin = "no";
+    ports = [ 9991 ];
+  };
 
   programs.zsh.enable = true;
   environment.shells = with pkgs; [ zsh ];
