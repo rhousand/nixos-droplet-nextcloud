@@ -110,19 +110,20 @@ in {
     ${config.services.nextcloud.hostName} = {
       forceSSL = true;
       enableACME = true;
-      ##extraConfig = ''
-      ##  error_log syslog:server=unix:/dev/log;
-      ##  access_log syslog:server=unix:/dev/log combined;
-      ##'';
+      extraConfig = ''
+        error_log syslog:server=unix:/dev/log;
+        access_log syslog:server=unix:/dev/log combined;
+      '';
     };
 
     "onlyoffice.gladstone-life.com" = {
       forceSSL = true;
       enableACME = true;
-      ##extraConfig = ''
-      ##  error_log syslog:server=unix:/dev/log;
-      ##  access_log syslog:server=unix:/dev/log combined;
-      ##'';
+## Push access logs to journald
+      extraConfig = ''
+        error_log syslog:server=unix:/dev/log;
+        access_log syslog:server=unix:/dev/log combined;
+      '';
     };
   };
   
@@ -190,10 +191,15 @@ in {
         type: syslog
       source: journalctl   
       ---
-      filenames:  
-        - /var/log/nginx/*.log
+      journalctl_filter:
+       - _SYSTEMD_UNIT=nginx.service
       labels:
-        type: nginx
+        type: syslog
+      source: journalctl   
+      #filenames:  
+      #  - /var/log/nginx/*.log
+      #labels:
+      #  type: nginx
       '';
   in {
     enable = true;
