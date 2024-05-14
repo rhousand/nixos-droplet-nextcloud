@@ -194,7 +194,7 @@ in {
       journalctl_filter:
        - _SYSTEMD_UNIT=nginx.service
       labels:
-        type: syslog
+        type: nginx
       source: journalctl   
       #filenames:  
       #  - /var/log/nginx/*.log
