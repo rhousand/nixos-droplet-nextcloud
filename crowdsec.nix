@@ -18,7 +18,11 @@
         # ...
         crowdsec.nixosModules.crowdsec
 
-        ({ pkgs, lib, ... }: {
+        ({
+          pkgs,
+          lib,
+          ...
+        }: {
           services.crowdsec = {
             enable = true;
             enrollKeyFile = "../../crowdsec.key";

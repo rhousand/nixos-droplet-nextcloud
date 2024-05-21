@@ -7,9 +7,9 @@
     oh-my-zsh = {
       enable = true;
       theme = "dst";
-      plugins = [ 
-        "docker-compose" 
-        "docker" 
+      plugins = [
+        "docker-compose"
+        "docker"
         "git"
         "sudo"
         "fzf"

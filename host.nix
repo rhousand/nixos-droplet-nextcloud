@@ -1,20 +1,23 @@
-{ pkgs, config, crowdsec, ... }:
-
-let 
-  unstable = import <nixos-unstable> { config = { allowUnfree = true; }; }; 
-  agenix = import <agenix> { config = { allowUnfree = true; }; }; 
+{
+  pkgs,
+  config,
+  crowdsec,
+  ...
+}: let
+  unstable = import <nixos-unstable> {config = {allowUnfree = true;};};
+  agenix = import <agenix> {config = {allowUnfree = true;};};
 in {
   environment.systemPackages = with pkgs; [
-        docker
-	vim
-	nvd
-	ripgrep
-        screen
-	tailscale
-	tealdeer
-        unstable.veilid
-        (pkgs.callPackage <agenix/pkgs/agenix.nix> {})
-	];
+    docker
+    vim
+    nvd
+    ripgrep
+    screen
+    tailscale
+    tealdeer
+    unstable.veilid
+    (pkgs.callPackage <agenix/pkgs/agenix.nix> {})
+  ];
 
   age.secrets.secret1 = {
     file = ./secrets/secret1.age;
@@ -31,10 +34,10 @@ in {
   };
   # System Services
   services.tailscale.enable = true;
-  
+
   #services.openssh.settings.LogLevel = "VERBOSE";
-  
- services.fail2ban = {
+
+  services.fail2ban = {
     enable = false;
     ignoreIP = [
       "10.0.0.0/24"
@@ -63,12 +66,12 @@ in {
       '';
     };
   };
-   #services.fail2ban.enable = true;
-   
-   services.fail2ban.bantime-increment.multipliers = "1 2 4 6 8 16 32 64";
+  #services.fail2ban.enable = true;
+
+  services.fail2ban.bantime-increment.multipliers = "1 2 4 6 8 16 32 64";
 
   services.postfix.enable = true;
-  
+
   services.nextcloud = {
     enable = true;
     hostName = "next.gladstone-life.com";
@@ -119,17 +122,17 @@ in {
     "onlyoffice.gladstone-life.com" = {
       forceSSL = true;
       enableACME = true;
-## Push access logs to journald
+      ## Push access logs to journald
       extraConfig = ''
         error_log syslog:server=unix:/dev/log;
         access_log syslog:server=unix:/dev/log combined;
       '';
     };
   };
-  
+
   # System Program configurations
   programs.bandwhich.enable = true;
-  
+
   programs.nh = {
     enable = true;
     clean.enable = true;
@@ -152,7 +155,7 @@ in {
         endif
       '';
       packages.myVimPackage = with pkgs.vimPlugins; {
-        start = [ vim-nix ];
+        start = [vim-nix];
       };
     };
   };
@@ -183,23 +186,24 @@ in {
     ##  filenames = [ "/var/log/nginx/*.log"];
     ##  labels.type = "nginx";
     ##};
-    acquisitions_file = pkgs.writeText "acquisitions.yaml"
+    acquisitions_file =
+      pkgs.writeText "acquisitions.yaml"
       ''
-      journalctl_filter:
-       - _SYSTEMD_UNIT=sshd.service
-      labels:
-        type: syslog
-      source: journalctl   
-      ---
-      journalctl_filter:
-       - _SYSTEMD_UNIT=nginx.service
-      labels:
-        type: nginx
-      source: journalctl   
-      #filenames:  
-      #  - /var/log/nginx/*.log
-      #labels:
-      #  type: nginx
+        journalctl_filter:
+         - _SYSTEMD_UNIT=sshd.service
+        labels:
+          type: syslog
+        source: journalctl
+        ---
+        journalctl_filter:
+         - _SYSTEMD_UNIT=nginx.service
+        labels:
+          type: nginx
+        source: journalctl
+        #filenames:
+        #  - /var/log/nginx/*.log
+        #labels:
+        #  type: nginx
       '';
   in {
     enable = true;
@@ -214,9 +218,9 @@ in {
     description = "Automatic connection to Tailscale";
 
     # make sure tailscale is running before trying to connect to tailscale
-    after = [ "network-pre.target" "tailscale.service" ];
-    wants = [ "network-pre.target" "tailscale.service" ];
-    wantedBy = [ "multi-user.target" ];
+    after = ["network-pre.target" "tailscale.service"];
+    wants = ["network-pre.target" "tailscale.service"];
+    wantedBy = ["multi-user.target"];
 
     # set this service as a oneshot job
     serviceConfig.Type = "oneshot";
@@ -243,13 +247,13 @@ in {
     enable = true;
 
     # always allow traffic from your Tailscale network
-    trustedInterfaces = [ "tailscale0" ];
+    trustedInterfaces = ["tailscale0"];
 
     # Open UDP ports on public internet
-    allowedUDPPorts = [ config.services.tailscale.port 5150 3478 ];
+    allowedUDPPorts = [config.services.tailscale.port 5150 3478];
 
     # Open TCP ports on public internet
-    allowedTCPPorts = [ 9991 22 5150 80 8443 3478 443 ];
+    allowedTCPPorts = [9991 22 5150 80 8443 3478 443];
   };
 
   # enable closed source packages such as the minecraft server

@@ -1,6 +1,9 @@
-{ config, pkgs,  ... }:
 {
- home.enableNixpkgsReleaseCheck = false;
+  config,
+  pkgs,
+  ...
+}: {
+  home.enableNixpkgsReleaseCheck = false;
   home = {
     username = "rhousand";
     homeDirectory = "/home/rhousand";
@@ -8,12 +11,12 @@
     packages = with pkgs; [
       bat # a better cat
       bottom
-      neofetch 
+      neofetch
       ripgrep
       tealdeer
       zoxide # a better cd
     ];
-  stateVersion = "23.11";
+    stateVersion = "23.11";
   };
 
   imports = [
