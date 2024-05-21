@@ -26,12 +26,12 @@ in {
     group = "nextcloud";
   };
 
-  age.secrets.secret2 = {
-    file = ./secrets/secret2.age;
-    mode = "770";
-    owner = "rhousand";
-    group = "wheel";
-  };
+  #age.secrets.secret2 = {
+  #  file = ./secrets/secret2.age;
+  #  mode = "770";
+  #  owner = "rhousand";
+  #  group = "wheel";
+  #};
   # System Services
   services.tailscale.enable = true;
 

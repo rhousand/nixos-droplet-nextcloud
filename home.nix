@@ -1,13 +1,15 @@
 {
   config,
   pkgs,
+  agenix,
+  age,
   ...
 }: {
   home.enableNixpkgsReleaseCheck = false;
   home = {
     username = "rhousand";
     homeDirectory = "/home/rhousand";
-    #file.".rhtest".source = /run/agenix/secret2;
+    #    file.".rhtest".source = config.age.secrets.secret2.path;
     packages = with pkgs; [
       bat # a better cat
       bottom
