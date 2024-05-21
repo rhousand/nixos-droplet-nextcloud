@@ -8,8 +8,8 @@
      #  url = "git+file:///home/rhousand/repos/nixpkgs";
     };
     crowdsec = {
-      #url = "github:kampka/nix-flake-crowdsec";
-      url = "git+file:///home/rhousand/repos/nix-flake-crowdsec";
+      url = "github:kampka/nix-flake-crowdsec";
+      #url = "git+file:///home/rhousand/repos/nix-flake-crowdsec";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = { 
