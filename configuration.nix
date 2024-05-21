@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   imports = [
-    <home-manager/nixos>
-    <agenix/modules/age.nix>
+#    <home-manager/nixos>
+#    <agenix/modules/age.nix>
     ./emacs29.nix
     ./headscale.nix
     ./hardware-configuration.nix

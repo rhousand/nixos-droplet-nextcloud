@@ -7,7 +7,7 @@
   home = {
     username = "rhousand";
     homeDirectory = "/home/rhousand";
-    file.".rhtest".source = /run/agenix/secret2;
+    #file.".rhtest".source = /run/agenix/secret2;
     packages = with pkgs; [
       bat # a better cat
       bottom

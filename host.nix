@@ -2,10 +2,11 @@
   pkgs,
   config,
   crowdsec,
+  agenix,
   ...
 }: let
-  unstable = import <nixos-unstable> {config = {allowUnfree = true;};};
-  agenix = import <agenix> {config = {allowUnfree = true;};};
+  #unstable = import <nixos-unstable> {config = {allowUnfree = true;};};
+  #agenix = import <agenix> {config = {allowUnfree = true;};};
 in {
   environment.systemPackages = with pkgs; [
     docker
@@ -15,8 +16,7 @@ in {
     screen
     tailscale
     tealdeer
-    unstable.veilid
-    (pkgs.callPackage <agenix/pkgs/agenix.nix> {})
+    #inputs.agenix.packages."${system}".default
   ];
 
   age.secrets.secret1 = {

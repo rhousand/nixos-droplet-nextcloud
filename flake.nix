@@ -7,6 +7,9 @@
       url = "github:NixOS/nixpkgs/nixos-unstable";
       #  url = "git+file:///home/rhousand/repos/nixpkgs";
     };
+    agenix = {
+      url = "github:ryantm/agenix";
+    };
     crowdsec = {
       url = "github:kampka/nix-flake-crowdsec";
       #url = "git+file:///home/rhousand/repos/nix-flake-crowdsec";
@@ -20,6 +23,7 @@
   outputs = flakes @ {
     self,
     nixpkgs,
+    agenix,
     crowdsec,
     home-manager,
     ...
@@ -28,6 +32,8 @@
       nixos-droplet = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
+          agenix.nixosModules.default
+          home-manager.nixosModules.home-manager
           crowdsec.nixosModules.crowdsec
           ({
             pkgs,
