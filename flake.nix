@@ -11,7 +11,7 @@
       url = "github:ryantm/agenix";
     };
     crowdsec = {
-      url = "github:kampka/nix-flake-crowdsec";
+      url = "git+https://codeberg.org/kampka/nix-flake-crowdsec.git";
       #url = "git+file:///home/rhousand/repos/nix-flake-crowdsec";
       inputs.nixpkgs.follows = "nixpkgs";
     };
