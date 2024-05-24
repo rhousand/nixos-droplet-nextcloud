@@ -86,7 +86,7 @@ in {
     configureRedis = true;
     autoUpdateApps.enable = true;
     extraApps = {
-      inherit (config.services.nextcloud.package.packages.apps) talk cookbook contacts calendar tasks notes onlyoffice;
+      inherit (config.services.nextcloud.package.packages.apps) cookbook contacts calendar tasks notes onlyoffice;
       ## Unsplash does not support nextcloud 28 at this time however it should be added above as extraApps when ready.
       #unsplash =  pkgs.fetchNextcloudApp rec {
       #  url = "https://github.com/nextcloud/unsplash/releases/download/v2.2.1/unsplash.tar.gz";
