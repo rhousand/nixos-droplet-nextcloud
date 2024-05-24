@@ -82,7 +82,7 @@ in {
     config.adminpassFile = config.age.secrets.secret1.path;
     #config.adminpassFile = "${pkgs.writeText "adminpass" "This is where the password would be"}";
     settings.default_phone_region = "US";
-    package = pkgs.nextcloud28;
+    package = pkgs.nextcloud29;
     configureRedis = true;
     autoUpdateApps.enable = true;
     extraApps = {
