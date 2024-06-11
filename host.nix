@@ -16,7 +16,7 @@ in {
     screen
     tailscale
     tealdeer
-    inputs.agenix.packages."${system}".default
+    #inputs.agenix.packages."${system}".default
   ];
 
   age.secrets.secret1 = {
