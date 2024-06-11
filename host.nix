@@ -134,7 +134,10 @@ in {
   # System Program configurations
   programs.bandwhich.enable = true;
 
-  programs.gnupg.agent.enable = true;
+  programs.gnupg.agent = {
+    enable = true;
+  };
+  services.pcscd.enable = true;
 
   programs.nh = {
     enable = true;
