@@ -12,6 +12,7 @@
     #file.".rhtest".source = osConfig.age.secrets.secret2.path; 
     packages = with pkgs; [
       age
+      gnupg
       bat # a better cat
       bottom
       neofetch
