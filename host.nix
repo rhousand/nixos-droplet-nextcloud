@@ -1,20 +1,23 @@
-{ pkgs, config, ... }:
-
-let 
-  unstable = import <nixos-unstable> { config = { allowUnfree = true; }; }; 
-  agenix = import <agenix> { config = { allowUnfree = true; }; }; 
+{
+  pkgs,
+  config,
+  crowdsec,
+  agenix,
+  ...
+}: let
+  #unstable = import <nixos-unstable> {config = {allowUnfree = true;};};
+  #agenix = import <agenix> {config = {allowUnfree = true;};};
 in {
   environment.systemPackages = with pkgs; [
-        docker
-	vim
-	nvd
-	ripgrep
-        screen
-	tailscale
-	tealdeer
-        unstable.veilid
-        (pkgs.callPackage <agenix/pkgs/agenix.nix> {})
-	];
+    docker
+    vim
+    nvd
+    ripgrep
+    screen
+    tailscale
+    tealdeer
+    #inputs.agenix.packages."${system}".default
+  ];
 
   age.secrets.secret1 = {
     file = ./secrets/secret1.age;
@@ -25,50 +28,51 @@ in {
 
   age.secrets.secret2 = {
     file = ./secrets/secret2.age;
+    path = "/home/rhousand/.rhtest";
     mode = "770";
     owner = "rhousand";
     group = "wheel";
   };
   # System Services
   services.tailscale.enable = true;
-  
-  services.openssh.settings.LogLevel = "VERBOSE";
-  
-services.fail2ban = {
-   enable = true;
-   ignoreIP = [
-     "10.0.0.0/24"
-   ];
-   jails = {
-     nginx-http-auth = ''
-       enabled  = true
-       port     = http,https
-       logpath  = /var/log/nginx/*.log
-       backend  = polling
-       journalmatch =
-     '';
-     nginx-botsearch = ''
-       enabled  = true
-       port     = http,https
-       logpath  = /var/log/nginx/*.log
-       backend  = polling
-       journalmatch =
-     '';
-     nginx-bad-request = ''
-       enabled  = true
-       port     = http,https
-       logpath  = /var/log/nginx/*.log
-       backend  = polling
-       journalmatch =
-     '';
-   };
- };
+
+  #services.openssh.settings.LogLevel = "VERBOSE";
+
+  services.fail2ban = {
+    enable = false;
+    ignoreIP = [
+      "10.0.0.0/24"
+    ];
+    jails = {
+      nginx-http-auth = ''
+        enabled  = true
+        port     = http,https
+        logpath  = /var/log/nginx/*.log
+        backend  = polling
+        journalmatch =
+      '';
+      nginx-botsearch = ''
+        enabled  = true
+        port     = http,https
+        logpath  = /var/log/nginx/*.log
+        backend  = polling
+        journalmatch =
+      '';
+      nginx-bad-request = ''
+        enabled  = true
+        port     = http,https
+        logpath  = /var/log/nginx/*.log
+        backend  = polling
+        journalmatch =
+      '';
+    };
+  };
   #services.fail2ban.enable = true;
-  
+
   services.fail2ban.bantime-increment.multipliers = "1 2 4 6 8 16 32 64";
 
   services.postfix.enable = true;
-  
+
   services.nextcloud = {
     enable = true;
     hostName = "next.gladstone-life.com";
@@ -78,11 +82,11 @@ services.fail2ban = {
     config.adminpassFile = config.age.secrets.secret1.path;
     #config.adminpassFile = "${pkgs.writeText "adminpass" "This is where the password would be"}";
     settings.default_phone_region = "US";
-    package = pkgs.nextcloud28;
+    package = pkgs.nextcloud29;
     configureRedis = true;
     autoUpdateApps.enable = true;
     extraApps = {
-      inherit (config.services.nextcloud.package.packages.apps) cookbook contacts calendar tasks notes onlyoffice;
+      inherit (config.services.nextcloud.package.packages.apps) spreed cookbook contacts calendar notes onlyoffice;
       ## Unsplash does not support nextcloud 28 at this time however it should be added above as extraApps when ready.
       #unsplash =  pkgs.fetchNextcloudApp rec {
       #  url = "https://github.com/nextcloud/unsplash/releases/download/v2.2.1/unsplash.tar.gz";
@@ -110,22 +114,36 @@ services.fail2ban = {
     ${config.services.nextcloud.hostName} = {
       forceSSL = true;
       enableACME = true;
+      extraConfig = ''
+        error_log syslog:server=unix:/dev/log;
+        access_log syslog:server=unix:/dev/log combined;
+      '';
     };
 
     "onlyoffice.gladstone-life.com" = {
       forceSSL = true;
       enableACME = true;
+      ## Push access logs to journald
+      extraConfig = ''
+        error_log syslog:server=unix:/dev/log;
+        access_log syslog:server=unix:/dev/log combined;
+      '';
     };
   };
-  
+
   # System Program configurations
   programs.bandwhich.enable = true;
-  
+
+  programs.gnupg.agent = {
+    enable = true;
+  };
+  services.pcscd.enable = true;
+
   programs.nh = {
     enable = true;
     clean.enable = true;
     clean.extraArgs = "--keep-since 4d --keep 3";
-    flake = "/etc/nixos";
+    flake = "/home/rhousand/repos/nixos-droplet-nextcloud";
   };
 
   programs.neovim = {
@@ -143,21 +161,72 @@ services.fail2ban = {
         endif
       '';
       packages.myVimPackage = with pkgs.vimPlugins; {
-        start = [ vim-nix ];
+        start = [vim-nix];
       };
     };
   };
 
   environment.variables.EDITOR = "nvim";
 
+  # Add Crowdsec Bouncer Service
+  systemd.services.crowdsec.serviceConfig = {
+    ExecStartPre = let
+      script = pkgs.writeScriptBin "register-bouncer" ''
+        #!${pkgs.runtimeShell}
+        set -eu
+        set -o pipefail
+
+        if ! cscli bouncers list | grep -q "my-bouncer"; then
+          cscli bouncers add "my-bouncer" --key "kajbpijbjalkepciaske3094"
+        fi
+      '';
+    in ["${script}/bin/register-bouncer"];
+  };
+  # Allow Crowdsec Monitor SSHD via Systemd
+  services.crowdsec = let
+    ##yaml = (pkgs.formats.yaml {}).generate;
+    ##acquisitions_file = yaml "acquisitions.yaml" {
+    ##  source = "journalctl";
+    ##  journalctl_filter = ["_SYSTEMD_UNIT=sshd.service" ];
+    ##  labels.type = "syslog";
+    ##  filenames = [ "/var/log/nginx/*.log"];
+    ##  labels.type = "nginx";
+    ##};
+    acquisitions_file =
+      pkgs.writeText "acquisitions.yaml"
+      ''
+        journalctl_filter:
+         - _SYSTEMD_UNIT=sshd.service
+        labels:
+          type: syslog
+        source: journalctl
+        ---
+        journalctl_filter:
+         - _SYSTEMD_UNIT=nginx.service
+        labels:
+          type: nginx
+        source: journalctl
+        #filenames:
+        #  - /var/log/nginx/*.log
+        #labels:
+        #  type: nginx
+      '';
+  in {
+    enable = true;
+    allowLocalJournalAccess = true;
+    settings = {
+      crowdsec_service.acquisition_path = acquisitions_file;
+    };
+  };
+
   # create a oneshot job to authenticate to Tailscale
   systemd.services.tailscale-autoconnect = {
     description = "Automatic connection to Tailscale";
 
     # make sure tailscale is running before trying to connect to tailscale
-    after = [ "network-pre.target" "tailscale.service" ];
-    wants = [ "network-pre.target" "tailscale.service" ];
-    wantedBy = [ "multi-user.target" ];
+    after = ["network-pre.target" "tailscale.service"];
+    wants = ["network-pre.target" "tailscale.service"];
+    wantedBy = ["multi-user.target"];
 
     # set this service as a oneshot job
     serviceConfig.Type = "oneshot";
@@ -184,13 +253,13 @@ services.fail2ban = {
     enable = true;
 
     # always allow traffic from your Tailscale network
-    trustedInterfaces = [ "tailscale0" ];
+    trustedInterfaces = ["tailscale0"];
 
     # Open UDP ports on public internet
-    allowedUDPPorts = [ config.services.tailscale.port 5150 3478 ];
+    allowedUDPPorts = [config.services.tailscale.port 5150 3478];
 
     # Open TCP ports on public internet
-    allowedTCPPorts = [ 22 5150 80 8443 3478 443 ];
+    allowedTCPPorts = [9991 22 5150 80 8443 3478 443];
   };
 
   # enable closed source packages such as the minecraft server
