@@ -18,7 +18,7 @@
         "zoxide"
       ];
       extraConfig = ''
-	export TERM=xterm256color
+	export TERM=xterm-256color
         DISABLE_FZF_AUTO_COMPLETION="false"
         DISABLE_FZF_KEY_BINDINGS="false"
         FZF_BASE=$(fzf-share)
