@@ -65,8 +65,10 @@
               };
             };
           })
+	  ./maintenance.nix
           ./configuration.nix
         ];
+        specialArgs = { inherit flakes; };
       };
     };
   };
