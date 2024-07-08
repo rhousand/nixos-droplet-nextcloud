@@ -1,15 +1,15 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, flakes, ... }:
 
 {
   system.autoUpgrade = {
     enable = true;
     dates = "02:00";
-    flake = inputs.self.outPath;
-    flags = {
+    flake = flakes.self.outPath;
+    flags = [
       "--update-input"
       "nixpkgs"
       "-L"
-    };
+    ];
     randomizedDelaySec = "30min";
   };
 }
