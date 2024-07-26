@@ -3,6 +3,7 @@
     #    <home-manager/nixos>
     #    <agenix/modules/age.nix>
     ./emacs29.nix
+    ./apps/homepage-dashboard.nix
     ./headscale.nix
     ./hardware-configuration.nix
     ./networking.nix # generated at runtime by nixos-infect
