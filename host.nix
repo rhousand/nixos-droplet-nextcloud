@@ -259,7 +259,7 @@ in {
     allowedUDPPorts = [config.services.tailscale.port 5150 3478];
 
     # Open TCP ports on public internet
-    allowedTCPPorts = [9991 22 5150 80 8443 3478 443];
+    allowedTCPPorts = [config.services.blocky.settings.ports.dns 9991 22 5150 80 8443 3478 443];
   };
 
   # enable closed source packages such as the minecraft server
