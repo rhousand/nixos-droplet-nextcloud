@@ -15,7 +15,12 @@ services.blocky = {
       blocking = {
         blackLists = {
           #Adblocking
-          ads = ["https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"];
+          ads = [
+            "https://small.oisd.nl/domainswild"
+            "https://big.oisd.nl/domainswild" 
+            "https://nsfw.oisd.nl/domainswild" 
+            "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+          ];
           #Another filter for blocking adult sites
           adult = ["https://blocklistproject.github.io/Lists/porn.txt"];
           #You can add additional categories
