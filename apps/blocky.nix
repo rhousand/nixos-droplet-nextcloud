@@ -1,5 +1,9 @@
-{ pkgs, config, ... }: {
-services.blocky = {
+{
+  pkgs,
+  config,
+  ...
+}: {
+  services.blocky = {
     enable = true;
     settings = {
       ports.dns = 53; # Port for incoming DNS Queries.
@@ -9,7 +13,7 @@ services.blocky = {
       # For initially solving DoH/DoT Requests when no system Resolver is available.
       bootstrapDns = {
         upstream = "https://one.one.one.one/dns-query";
-        ips = [ "1.1.1.1" "1.0.0.1" ];
+        ips = ["1.1.1.1" "1.0.0.1"];
       };
       #Enable Blocking of certian domains.
       blocking = {
@@ -17,8 +21,8 @@ services.blocky = {
           #Adblocking
           ads = [
             "https://small.oisd.nl/domainswild"
-            "https://big.oisd.nl/domainswild" 
-            "https://nsfw.oisd.nl/domainswild" 
+            "https://big.oisd.nl/domainswild"
+            "https://nsfw.oisd.nl/domainswild"
             "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
           ];
           #Another filter for blocking adult sites
@@ -27,7 +31,7 @@ services.blocky = {
         };
         #Configure what block categories are used
         clientGroupsBlock = {
-          default = [ "ads" "adult" ];
+          default = ["ads" "adult"];
           #kids-ipad = ["ads" "adult"];
         };
       };

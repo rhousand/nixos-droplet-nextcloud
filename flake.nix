@@ -65,10 +65,10 @@
               };
             };
           })
-	  ./maintenance.nix
+          ./maintenance.nix
           ./configuration.nix
         ];
-        specialArgs = { inherit flakes; };
+        specialArgs = {inherit flakes;};
       };
     };
   };

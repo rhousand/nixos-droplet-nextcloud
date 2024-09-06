@@ -1,4 +1,8 @@
-{pkgs, lib, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
     #    <home-manager/nixos>
     #    <agenix/modules/age.nix>
@@ -12,7 +16,7 @@
     ./syncthing.nix
     ./security.nix
   ];
-  
+
   options = {
     my.test.option = lib.mkOption {
       type = lib.types.str;

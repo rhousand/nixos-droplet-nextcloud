@@ -18,15 +18,15 @@
         "zoxide"
       ];
       extraConfig = ''
-	export TERM=xterm-256color
-        DISABLE_FZF_AUTO_COMPLETION="false"
-        DISABLE_FZF_KEY_BINDINGS="false"
-        FZF_BASE=$(fzf-share)
-        source "$(fzf-share)/completion.zsh"
-        export FPATH=~/.task:$FPATH
-        source "$(fzf-share)/key-bindings.zsh"
-        PROMPT="$PROMPT\$(vi_mode_prompt_info)"
-        RPROMPT="\$(tf_prompt_info)\$(vi_mode_prompt_info)$RPROMPT"
+        export TERM=xterm-256color
+               DISABLE_FZF_AUTO_COMPLETION="false"
+               DISABLE_FZF_KEY_BINDINGS="false"
+               FZF_BASE=$(fzf-share)
+               source "$(fzf-share)/completion.zsh"
+               export FPATH=~/.task:$FPATH
+               source "$(fzf-share)/key-bindings.zsh"
+               PROMPT="$PROMPT\$(vi_mode_prompt_info)"
+               RPROMPT="\$(tf_prompt_info)\$(vi_mode_prompt_info)$RPROMPT"
       '';
     };
     initExtra = ''

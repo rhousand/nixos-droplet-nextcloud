@@ -1,6 +1,9 @@
-{ config, pkgs, flakes, ... }:
-
 {
+  config,
+  pkgs,
+  flakes,
+  ...
+}: {
   system.autoUpgrade = {
     enable = true;
     dates = "02:00";
@@ -19,6 +22,6 @@
   };
   nix.optimise = {
     automatic = true;
-    dates = [ "04:00" ];
+    dates = ["04:00"];
   };
 }
