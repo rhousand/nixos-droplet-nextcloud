@@ -67,7 +67,6 @@
           })
 	  ./maintenance.nix
           ./configuration.nix
-          ./apps/blocky.nix
         ];
         specialArgs = { inherit flakes; };
       };

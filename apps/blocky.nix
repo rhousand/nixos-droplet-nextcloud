@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, config, ... }: {
 services.blocky = {
     enable = true;
     settings = {
@@ -33,3 +33,4 @@ services.blocky = {
       };
     };
   };
+}
