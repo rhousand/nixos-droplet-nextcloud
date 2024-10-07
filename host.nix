@@ -184,35 +184,36 @@ in {
   };
   # Allow Crowdsec Monitor SSHD via Systemd
   services.crowdsec = let
-    ##yaml = (pkgs.formats.yaml {}).generate;
-    ##acquisitions_file = yaml "acquisitions.yaml" {
-    ##  source = "journalctl";
-    ##  journalctl_filter = ["_SYSTEMD_UNIT=sshd.service" ];
-    ##  labels.type = "syslog";
-    ##  filenames = [ "/var/log/nginx/*.log"];
-    ##  labels.type = "nginx";
-    ##};
-    acquisitions_file =
-      pkgs.writeText "acquisitions.yaml"
-      ''
-        journalctl_filter:
-         - _SYSTEMD_UNIT=sshd.service
-        labels:
-          type: syslog
-        source: journalctl
-        ---
-        journalctl_filter:
-         - _SYSTEMD_UNIT=nginx.service
-        labels:
-          type: nginx
-        source: journalctl
-        #filenames:
-        #  - /var/log/nginx/*.log
-        #labels:
-        #  type: nginx
-      '';
+    yaml = (pkgs.formats.yaml {}).generate;
+    acquisitions_file = yaml "acquisitions.yaml" {
+      source = "journalctl";
+      journalctl_filter = ["_SYSTEMD_UNIT=sshd.service" ];
+      labels.type = "syslog";
+      #filenames = [ "/var/log/nginx/*.log"];
+      #labels.type = "nginx";
+    };
+    #acquisitions_file =
+    #  pkgs.writeText "acquisitions.yaml"
+    #  ''
+    #    journalctl_filter:
+    #     - _SYSTEMD_UNIT=sshd.service
+    #    labels:
+    #      type: syslog
+    #    source: journalctl
+    #    ---
+    #    journalctl_filter:
+    #     - _SYSTEMD_UNIT=nginx.service
+    #    labels:
+    #      type: nginx
+    #    source: journalctl
+    #    #filenames:
+    #    #  - /var/log/nginx/*.log
+    #    #labels:
+    #    #  type: nginx
+    #  '';
   in {
     enable = true;
+    acquisitions = [ "syslog" "journald" ];
     allowLocalJournalAccess = true;
     settings = {
       crowdsec_service.acquisition_path = acquisitions_file;
