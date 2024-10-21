@@ -9,7 +9,7 @@
     ./emacs29.nix
     #./apps/homepage-dashboard.nix
     ./apps/blocky.nix
-    ./headscale.nix
+    #./headscale.nix
     ./hardware-configuration.nix
     ./networking.nix # generated at runtime by nixos-infect
     ./host.nix
