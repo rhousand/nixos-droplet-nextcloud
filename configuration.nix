@@ -27,7 +27,7 @@
   config = {
     boot.tmp.cleanOnBoot = true;
     zramSwap.enable = true;
-
+    boot.extraSystemdUnitPaths = [ "/etc/systemd-mutable/system" ];
     virtualisation.docker.enable = true;
 
     networking.hostName = "nixos-droplet";
