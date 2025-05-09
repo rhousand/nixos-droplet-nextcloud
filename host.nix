@@ -72,17 +72,17 @@ in {
   services.fail2ban.bantime-increment.multipliers = "1 2 4 6 8 16 32 64";
 
   services.postfix.enable = true;
-
   services.nextcloud = {
     enable = true;
     hostName = "next.gladstone-life.com";
     https = true;
+    config.dbtype = "sqlite";
     phpOptions."opcache.interned_strings_buffer" = "23";
     phpOptions."output_buffering" = "off";
     config.adminpassFile = config.age.secrets.secret1.path;
     #config.adminpassFile = "${pkgs.writeText "adminpass" "This is where the password would be"}";
     settings.default_phone_region = "US";
-    package = pkgs.nextcloud30;
+    package = pkgs.nextcloud31;
     configureRedis = true;
     autoUpdateApps.enable = true;
     extraApps = {
@@ -183,43 +183,18 @@ in {
     in ["${script}/bin/register-bouncer"];
   };
   # Allow Crowdsec Monitor SSHD via Systemd
-  services.crowdsec = let
-    yaml = (pkgs.formats.yaml {}).generate;
-    acquisitions_file = yaml "acquisitions.yaml" {
-      source = "journalctl";
-      journalctl_filter = ["_SYSTEMD_UNIT=sshd.service" ];
-      labels.type = "syslog";
-      #filenames = [ "/var/log/nginx/*.log"];
-      #labels.type = "nginx";
-    };
-    #acquisitions_file =
-    #  pkgs.writeText "acquisitions.yaml"
-    #  ''
-    #    journalctl_filter:
-    #     - _SYSTEMD_UNIT=sshd.service
-    #    labels:
-    #      type: syslog
-    #    source: journalctl
-    #    ---
-    #    journalctl_filter:
-    #     - _SYSTEMD_UNIT=nginx.service
-    #    labels:
-    #      type: nginx
-    #    source: journalctl
-    #    #filenames:
-    #    #  - /var/log/nginx/*.log
-    #    #labels:
-    #    #  type: nginx
-    #  '';
-  in {
+  services.crowdsec = {
     enable = true;
-    acquisitions = [ "syslog" "journald" ];
+    enrollKeyFile = "/home/rhousand/crowdsec.key";
     allowLocalJournalAccess = true;
-    settings = {
-      crowdsec_service.acquisition_path = acquisitions_file;
-    };
+    acquisitions = [
+      {
+        source = "journalctl";
+        journalctl_filter = [ "_SYSTEMD_UNIT=nginx.service" ];
+        labels.type = "nginx";
+      }
+    ];
   };
-
   # create a oneshot job to authenticate to Tailscale
   systemd.services.tailscale-autoconnect = {
     description = "Automatic connection to Tailscale";
